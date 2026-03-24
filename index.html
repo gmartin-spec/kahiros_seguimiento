@@ -4,110 +4,230 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kahirós — Gestión de Compras</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f5f4f0;
-    --surface: #ffffff;
-    --surface2: #f0efe9;
-    --border: #e0dfd8;
-    --border2: #cccbc3;
-    --text: #1a1a18;
-    --text2: #6b6a63;
-    --text3: #9e9d96;
-    --blue: #1a5fa8; --blue-bg: #e8f0fb; --blue-bd: #b8d0f0;
-    --amber: #8c5a00; --amber-bg: #fef3d8; --amber-bd: #f5d88a;
-    --green: #2a6a2a; --green-bg: #e4f5e4; --green-bd: #a8d8a8;
-    --red: #9a2020; --red-bg: #fce8e8; --red-bd: #f0b8b8;
-    --teal: #0f6e56; --teal-bg: #e1f5ee; --teal-bd: #9fe1cb;
-    --radius: 8px; --radius-lg: 12px;
-    --font: 'DM Sans', system-ui, sans-serif;
-    --mono: 'DM Mono', monospace;
-    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --green-dark:  #2D6A4F;
+    --green-mid:   #40916C;
+    --green-light: #74C69D;
+    --green-pale:  #D8F3DC;
+    --green-bg:    #F0FAF4;
+    --amber:       #E07B2A;
+    --amber-light: #FEF3D8;
+    --amber-bd:    #F5D88A;
+    --bg:          #F5F4F0;
+    --surface:     #FFFFFF;
+    --surface2:    #F0EFE9;
+    --border:      #DDD9D0;
+    --border2:     #C8C4BA;
+    --text:        #1A1A18;
+    --text2:       #5A5950;
+    --text3:       #9A9888;
+    --red:         #C0392B;
+    --red-bg:      #FDECEA;
+    --red-bd:      #F0B8B0;
+    --blue:        #1A5FA8;
+    --blue-bg:     #E8F0FB;
+    --radius:      8px;
+    --radius-lg:   14px;
+    --radius-xl:   20px;
+    --font:        'Nunito Sans', system-ui, sans-serif;
+    --font-head:   'Nunito', system-ui, sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.55; }
 
-  /* Layout */
+  /* Decorative SVG blobs — pure CSS, no images */
+  .blob { position: absolute; border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%; pointer-events: none; }
+
+  /* Shell */
   .shell { display: flex; min-height: 100vh; }
-  .sidebar { width: 220px; background: var(--surface); border-right: 1px solid var(--border); padding: 20px 0; flex-shrink: 0; position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; }
-  .main { flex: 1; padding: 28px 32px; max-width: 1100px; }
 
   /* Sidebar */
-  .logo { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
-  .logo-name { font-size: 15px; font-weight: 500; }
-  .logo-sub { font-size: 11px; color: var(--text3); margin-top: 1px; }
-  .nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 20px; font-size: 13px; color: var(--text2); cursor: pointer; border-left: 2px solid transparent; transition: all 0.12s; }
-  .nav-item:hover { background: var(--surface2); color: var(--text); }
-  .nav-item.active { color: var(--text); background: var(--surface2); border-left-color: var(--text); font-weight: 500; }
-  .nav-icon { font-size: 15px; width: 18px; text-align: center; }
-  .sidebar-bottom { margin-top: auto; padding: 16px 20px 0; border-top: 1px solid var(--border); }
-  .sync-row { display: flex; align-items: center; gap: 7px; }
-  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
-  .sync-dot.warn { background: #d4900a; }
-  .sync-dot.err { background: var(--red); }
-  .sync-label { font-size: 11px; color: var(--text3); flex: 1; }
-  .sync-btn { font-size: 11px; color: var(--blue); background: none; border: none; cursor: pointer; padding: 2px 0; text-decoration: underline; }
-  .sheet-select { margin-top: 8px; width: 100%; padding: 5px 7px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--surface); color: var(--text); font-size: 12px; font-family: var(--font); }
+  .sidebar {
+    width: 230px; flex-shrink: 0;
+    background: var(--green-dark);
+    display: flex; flex-direction: column;
+    position: sticky; top: 0; height: 100vh;
+    overflow: hidden;
+  }
+  .sidebar-deco {
+    position: absolute; top: -60px; right: -60px;
+    width: 180px; height: 180px;
+    background: rgba(116,198,157,0.18);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .sidebar-deco2 {
+    position: absolute; bottom: 40px; left: -50px;
+    width: 140px; height: 140px;
+    background: rgba(116,198,157,0.12);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .logo-area {
+    padding: 22px 20px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    position: relative; z-index: 1;
+  }
+  .logo-name {
+    font-family: var(--font-head);
+    font-size: 18px; font-weight: 800;
+    color: #fff; letter-spacing: 0.04em;
+  }
+  .logo-tagline {
+    font-size: 10px; color: rgba(255,255,255,0.55);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .logo-project {
+    margin-top: 10px; font-size: 12px;
+    color: var(--green-light); font-weight: 600;
+  }
+  nav { padding: 14px 0; flex: 1; position: relative; z-index: 1; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 20px; font-size: 13px; font-weight: 600;
+    color: rgba(255,255,255,0.65); cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.15s; letter-spacing: 0.01em;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: #fff; }
+  .nav-item.active {
+    color: #fff; background: rgba(255,255,255,0.1);
+    border-left-color: var(--amber);
+  }
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; opacity: 0.9; }
 
-  /* Header */
-  .page-header { margin-bottom: 24px; }
-  .page-title { font-size: 22px; font-weight: 500; }
-  .page-sub { font-size: 13px; color: var(--text3); margin-top: 3px; }
+  .sidebar-bottom {
+    padding: 16px 20px 20px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    position: relative; z-index: 1;
+  }
+  .sheet-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.45); margin-bottom: 6px; }
+  .sheet-select {
+    width: 100%; padding: 7px 10px;
+    border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.1); color: #fff;
+    font-size: 12px; font-family: var(--font);
+    appearance: none;
+  }
+  .sheet-select option { background: var(--green-dark); color: #fff; }
+  .sync-row { display: flex; align-items: center; gap: 7px; margin-top: 10px; }
+  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green-light); flex-shrink: 0; }
+  .sync-dot.warn { background: var(--amber); }
+  .sync-dot.err { background: #e74c3c; }
+  .sync-label { font-size: 11px; color: rgba(255,255,255,0.5); flex: 1; }
+  .sync-btn {
+    font-size: 11px; color: var(--green-light);
+    background: none; border: none; cursor: pointer;
+    text-decoration: underline; font-family: var(--font);
+  }
 
-  /* Sections */
+  /* Main */
+  .main { flex: 1; padding: 32px 36px; max-width: 1080px; }
+
+  .page-header { margin-bottom: 26px; }
+  .page-title {
+    font-family: var(--font-head);
+    font-size: 24px; font-weight: 800;
+    color: var(--green-dark); line-height: 1.2;
+  }
+  .page-sub { font-size: 13px; color: var(--text3); margin-top: 4px; }
+
   .section { display: none; }
   .section.active { display: block; }
 
-  /* KPI grid */
+  /* KPI Cards */
   .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap: 12px; margin-bottom: 24px; }
-  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; }
-  .kpi-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
-  .kpi-value { font-size: 30px; font-weight: 500; line-height: 1; }
-  .kpi-value.c-blue { color: var(--blue); }
-  .kpi-value.c-amber { color: var(--amber); }
-  .kpi-value.c-green { color: var(--green); }
-  .kpi-value.c-red { color: var(--red); }
+  .kpi {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 16px 18px;
+    position: relative; overflow: hidden;
+  }
+  .kpi::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--green-mid);
+  }
+  .kpi.c-amber::before { background: var(--amber); }
+  .kpi.c-red::before { background: var(--red); }
+  .kpi.c-green::before { background: var(--green-dark); }
+  .kpi-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; font-weight: 600; }
+  .kpi-value { font-family: var(--font-head); font-size: 32px; font-weight: 800; line-height: 1; color: var(--green-dark); }
+  .kpi.c-amber .kpi-value { color: var(--amber); }
+  .kpi.c-red .kpi-value { color: var(--red); }
 
   /* Alerts */
-  .alert { display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px; border-radius: var(--radius); font-size: 13px; margin-bottom: 8px; line-height: 1.5; }
+  .alert {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 11px 15px; border-radius: var(--radius);
+    font-size: 13px; margin-bottom: 8px; line-height: 1.5;
+    border-left: 3px solid;
+  }
+  .alert.danger { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+  .alert.warn { background: var(--amber-light); border-color: var(--amber); color: #8c5a00; }
+  .alert.ok { background: var(--green-pale); border-color: var(--green-mid); color: var(--green-dark); }
   .alert-icon { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
-  .alert.danger { background: var(--red-bg); border: 1px solid var(--red-bd); color: var(--red); }
-  .alert.warn { background: var(--amber-bg); border: 1px solid var(--amber-bd); color: var(--amber); }
-  .alert.ok { background: var(--green-bg); border: 1px solid var(--green-bd); color: var(--green); }
-  .alert.info { background: var(--blue-bg); border: 1px solid var(--blue-bd); color: var(--blue); }
 
   /* Section heading */
-  .sec-heading { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text3); margin: 24px 0 10px; }
+  .sec-heading {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--text3);
+    margin: 24px 0 10px; display: flex; align-items: center; gap: 8px;
+  }
+  .sec-heading::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
 
   /* Bar chart */
-  .bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-  .bar-label { min-width: 110px; font-size: 12px; color: var(--text2); }
-  .bar-track { flex: 1; height: 9px; background: var(--surface2); border-radius: 5px; overflow: hidden; }
+  .bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 9px; }
+  .bar-label { min-width: 110px; font-size: 12px; color: var(--text2); font-weight: 600; }
+  .bar-track { flex: 1; height: 10px; background: var(--surface2); border-radius: 5px; overflow: hidden; }
   .bar-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
-  .bar-n { min-width: 22px; text-align: right; font-size: 12px; color: var(--text3); }
+  .bar-n { min-width: 22px; text-align: right; font-size: 12px; color: var(--text3); font-weight: 600; }
 
   /* Resp cards */
-  .resp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap: 8px; }
-  .resp-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; }
-  .resp-name { font-size: 13px; font-weight: 500; }
+  .resp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap: 8px; }
+  .resp-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 12px 14px;
+    border-top: 3px solid var(--green-light);
+  }
+  .resp-name { font-size: 13px; font-weight: 700; color: var(--green-dark); }
   .resp-count { font-size: 11px; color: var(--text3); margin-top: 2px; }
 
   /* Filters */
   .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
-  .filters input, .filters select { padding: 7px 10px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--surface); color: var(--text); font-size: 13px; font-family: var(--font); }
+  .filters input, .filters select {
+    padding: 8px 12px; border-radius: var(--radius);
+    border: 1px solid var(--border2); background: var(--surface);
+    color: var(--text); font-size: 13px; font-family: var(--font);
+    transition: border 0.15s;
+  }
   .filters input { flex: 1; min-width: 200px; }
-  .filters input:focus, .filters select:focus { outline: 2px solid var(--blue); border-color: transparent; }
+  .filters input:focus, .filters select:focus {
+    outline: none; border-color: var(--green-mid);
+    box-shadow: 0 0 0 3px rgba(64,145,108,0.12);
+  }
 
   /* Table */
-  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  .table-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden;
+  }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th { text-align: left; padding: 10px 14px; color: var(--text3); border-bottom: 1px solid var(--border); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; background: var(--surface2); }
+  thead { background: var(--green-dark); }
+  th {
+    text-align: left; padding: 11px 14px;
+    color: rgba(255,255,255,0.75);
+    font-weight: 600; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
   td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.4; }
   tr:last-child td { border-bottom: none; }
   tbody tr { cursor: pointer; transition: background 0.1s; }
-  tbody tr:hover td { background: var(--surface2); }
-  .col-id { width: 38px; color: var(--text3) !important; font-family: var(--mono); font-size: 11px; }
+  tbody tr:hover td { background: var(--green-bg); }
+  .col-id { width: 38px; color: var(--text3) !important; font-size: 11px; }
   .col-resp { width: 85px; font-size: 12px; }
   .col-fecha { width: 90px; font-size: 12px; }
   .col-estado { width: 110px; }
@@ -115,60 +235,127 @@
   .col-flag { width: 34px; }
 
   /* Badges */
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; white-space: nowrap; }
-  .b-open { background: var(--blue-bg); color: var(--blue); }
-  .b-prog { background: var(--amber-bg); color: var(--amber); }
-  .b-adj { background: var(--teal-bg); color: var(--teal); }
-  .b-pend { background: var(--red-bg); color: var(--red); }
-  .b-done { background: var(--green-bg); color: var(--green); }
-  .b-alta { background: var(--red-bg); color: var(--red); }
-  .b-media { background: var(--amber-bg); color: var(--amber); }
-  .b-baja { background: var(--green-bg); color: var(--green); }
-  .b-flag { background: var(--red-bg); color: var(--red); }
+  .badge { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; letter-spacing: 0.02em; }
+  .b-open  { background: #E8F4FF; color: #1A5FA8; }
+  .b-prog  { background: var(--amber-light); color: #8c5a00; }
+  .b-adj   { background: var(--green-pale); color: var(--green-dark); }
+  .b-pend  { background: var(--red-bg); color: var(--red); }
+  .b-done  { background: #EAF3DE; color: #2a6a2a; }
+  .b-alta  { background: var(--red-bg); color: var(--red); }
+  .b-media { background: var(--amber-light); color: #8c5a00; }
+  .b-baja  { background: var(--green-pale); color: var(--green-dark); }
+  .b-flag  { background: var(--red-bg); color: var(--red); }
 
-  /* Detail panel */
-  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.25); z-index: 200; display: flex; justify-content: flex-end; backdrop-filter: blur(1px); }
-  .panel { background: var(--surface); width: 460px; max-width: 100vw; height: 100%; overflow-y: auto; padding: 24px; border-left: 1px solid var(--border); box-shadow: -4px 0 20px rgba(0,0,0,0.08); display: flex; flex-direction: column; gap: 0; }
-  .panel-close { align-self: flex-end; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; color: var(--text2); font-size: 13px; padding: 4px 10px; margin-bottom: 16px; }
-  .panel-close:hover { background: var(--border); }
-  .panel-title { font-size: 17px; font-weight: 500; line-height: 1.35; margin-bottom: 16px; }
-  .panel-meta { display: grid; grid-template-columns: 90px 1fr; gap: 8px 0; font-size: 13px; padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
-  .panel-lbl { color: var(--text3); padding-top: 1px; }
-  .panel-ctx { font-size: 13px; color: var(--text2); line-height: 1.6; padding: 10px 14px; background: var(--surface2); border-radius: var(--radius); margin-bottom: 16px; }
-  .actions-heading { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text3); margin-bottom: 10px; }
-  .action-item { display: flex; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; line-height: 1.5; }
+  /* Detail Panel */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.3); z-index: 200;
+    display: flex; justify-content: flex-end;
+  }
+  .panel {
+    background: var(--surface); width: 480px; max-width: 100vw;
+    height: 100%; overflow-y: auto;
+    display: flex; flex-direction: column;
+    border-left: 1px solid var(--border);
+    box-shadow: -6px 0 24px rgba(0,0,0,0.1);
+  }
+  .panel-header {
+    background: var(--green-dark); padding: 20px 24px;
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .panel-title {
+    font-family: var(--font-head); font-size: 16px; font-weight: 700;
+    color: #fff; line-height: 1.35; flex: 1;
+  }
+  .panel-close {
+    background: rgba(255,255,255,0.15); border: none;
+    border-radius: 6px; cursor: pointer; color: #fff;
+    font-size: 14px; padding: 4px 9px; flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .panel-close:hover { background: rgba(255,255,255,0.25); }
+  .panel-body { padding: 20px 24px; flex: 1; }
+  .panel-meta { display: grid; grid-template-columns: 90px 1fr; gap: 10px 0; font-size: 13px; padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  .panel-lbl { color: var(--text3); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; padding-top: 3px; }
+  .panel-ctx {
+    font-size: 13px; color: var(--text2); line-height: 1.6;
+    padding: 12px 14px; background: var(--green-bg);
+    border-radius: var(--radius); margin-bottom: 16px;
+    border-left: 3px solid var(--green-mid);
+  }
+  .actions-heading {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.07em; color: var(--text3); margin-bottom: 10px;
+  }
+  .action-item {
+    display: flex; gap: 12px; padding: 10px 0;
+    border-bottom: 1px solid var(--border); font-size: 13px; line-height: 1.5;
+  }
   .action-item:last-child { border-bottom: none; }
-  .action-n { min-width: 20px; color: var(--text3); font-family: var(--mono); font-size: 11px; margin-top: 2px; }
+  .action-n {
+    min-width: 22px; height: 22px; border-radius: 50%;
+    background: var(--green-pale); color: var(--green-dark);
+    font-size: 11px; font-weight: 700; display: flex;
+    align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+  }
 
   /* Form */
-  .form-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; max-width: 560px; }
+  .form-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 28px; max-width: 560px;
+  }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .fg { display: flex; flex-direction: column; gap: 5px; }
   .fg.full { grid-column: 1/-1; }
-  .fg label { font-size: 12px; color: var(--text2); font-weight: 500; }
-  .fg input, .fg select, .fg textarea { padding: 8px 11px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--surface); color: var(--text); font-size: 13px; font-family: var(--font); transition: border 0.1s; }
-  .fg input:focus, .fg select:focus, .fg textarea:focus { outline: none; border-color: var(--blue); }
+  .fg label { font-size: 11px; color: var(--text3); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+  .fg input, .fg select, .fg textarea {
+    padding: 9px 12px; border-radius: var(--radius);
+    border: 1px solid var(--border2); background: var(--surface);
+    color: var(--text); font-size: 13px; font-family: var(--font);
+    transition: border 0.15s;
+  }
+  .fg input:focus, .fg select:focus, .fg textarea:focus {
+    outline: none; border-color: var(--green-mid);
+    box-shadow: 0 0 0 3px rgba(64,145,108,0.12);
+  }
   .fg textarea { resize: vertical; min-height: 90px; }
-  .fg.flag-row { flex-direction: row; align-items: center; gap: 8px; }
-  .fg.flag-row label { font-size: 13px; font-weight: 400; cursor: pointer; }
-  .btn-primary { margin-top: 16px; padding: 10px 22px; background: var(--text); color: #fff; border: none; border-radius: var(--radius); font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--font); transition: opacity 0.1s; }
-  .btn-primary:hover { opacity: 0.85; }
-  .form-msg { font-size: 13px; margin-top: 10px; }
-  .form-hint { font-size: 12px; color: var(--text3); margin-top: 12px; line-height: 1.6; background: var(--surface2); border-radius: var(--radius); padding: 10px 14px; }
-
-  /* Empty */
+  .fg.flag-row { flex-direction: row; align-items: center; gap: 9px; }
+  .fg.flag-row label { font-size: 13px; text-transform: none; letter-spacing: 0; color: var(--text2); cursor: pointer; font-weight: 600; }
+  .btn-primary {
+    margin-top: 18px; padding: 11px 24px;
+    background: var(--green-dark); color: #fff;
+    border: none; border-radius: var(--radius-lg);
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    font-family: var(--font); letter-spacing: 0.02em;
+    transition: background 0.15s;
+  }
+  .btn-primary:hover { background: var(--green-mid); }
+  .form-hint {
+    font-size: 12px; color: var(--text3); margin-top: 14px;
+    line-height: 1.6; background: var(--green-bg);
+    border-radius: var(--radius); padding: 12px 14px;
+    border-left: 3px solid var(--green-light);
+  }
   .empty-state { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 13px; }
+
+  /* Ventus accent dot pattern (decorative) */
+  .dot-grid {
+    display: grid; grid-template-columns: repeat(8, 6px); gap: 6px;
+    opacity: 0.25; margin-bottom: 20px;
+  }
+  .dot-grid span { width: 4px; height: 4px; border-radius: 50%; background: var(--green-mid); display: block; }
 
   @media (max-width: 700px) {
     .shell { flex-direction: column; }
     .sidebar { width: 100%; height: auto; position: static; flex-direction: row; flex-wrap: wrap; padding: 12px; gap: 4px; }
-    .logo { border: none; padding: 0; margin: 0; flex: 1; }
-    .nav-item { border-left: none; border-bottom: 2px solid transparent; padding: 6px 12px; border-radius: var(--radius); }
-    .nav-item.active { border-left-color: transparent; border-bottom-color: var(--text); }
+    .logo-area { border: none; padding: 0; flex: 1; }
+    .nav-item { border-left: none; border-bottom: 3px solid transparent; padding: 7px 12px; border-radius: var(--radius); }
+    .nav-item.active { border-left-color: transparent; border-bottom-color: var(--amber); }
     .sidebar-bottom { margin-top: 0; border-top: none; padding: 0; }
     .main { padding: 16px; }
     .form-grid { grid-template-columns: 1fr; }
     .panel { width: 100vw; }
+    .sidebar-deco, .sidebar-deco2 { display: none; }
   }
 </style>
 </head>
@@ -177,20 +364,30 @@
 
   <!-- Sidebar -->
   <aside class="sidebar">
-    <div class="logo">
-      <div class="logo-name">Kahirós</div>
-      <div class="logo-sub">Gestión de Compras</div>
+    <div class="sidebar-deco"></div>
+    <div class="sidebar-deco2"></div>
+    <div class="logo-area">
+      <div class="logo-name">VENTUS</div>
+      <div class="logo-tagline">Nos importa el futuro</div>
+      <div class="logo-project">Kahirós — Compras</div>
     </div>
     <nav>
-      <div class="nav-item active" onclick="showSection('dash',this)"><span class="nav-icon">▤</span>Dashboard</div>
-      <div class="nav-item" onclick="showSection('tracker',this)"><span class="nav-icon">≡</span>Seguimiento</div>
-      <div class="nav-item" onclick="showSection('nuevo',this)"><span class="nav-icon">+</span>Nuevo tema</div>
+      <div class="nav-item active" onclick="showSection('dash',this)">
+        <span class="nav-icon">▤</span>Dashboard
+      </div>
+      <div class="nav-item" onclick="showSection('tracker',this)">
+        <span class="nav-icon">≡</span>Seguimiento
+      </div>
+      <div class="nav-item" onclick="showSection('nuevo',this)">
+        <span class="nav-icon">+</span>Nuevo tema
+      </div>
     </nav>
     <div class="sidebar-bottom">
+      <div class="sheet-label">Reunión</div>
       <select class="sheet-select" id="sheet-sel" onchange="onSheetChange()">
         <option value="local">24-03-2026 (local)</option>
       </select>
-      <div class="sync-row" style="margin-top:8px">
+      <div class="sync-row">
         <span class="sync-dot" id="sync-dot"></span>
         <span class="sync-label" id="sync-label">Datos locales</span>
         <button class="sync-btn" onclick="syncSheet()">Sincronizar</button>
@@ -203,13 +400,14 @@
 
     <!-- Dashboard -->
     <div id="dash" class="section active">
+      <div class="dot-grid" id="dot-deco"></div>
       <div class="page-header">
-        <div class="page-title">Dashboard</div>
-        <div class="page-sub" id="dash-sub">Reunión 24-03-2026 · Convocante: J. Gibert · 21 temas</div>
+        <div class="page-title">Dashboard de compras</div>
+        <div class="page-sub" id="dash-sub">Reunión 24-03-2026 · Convocante: J. Gibert · Proyecto Kahirós H2</div>
       </div>
       <div class="kpi-grid" id="kpi-grid"></div>
       <div id="alert-area"></div>
-      <div class="sec-heading">Distribución por estado</div>
+      <div class="sec-heading">Estado de temas</div>
       <div id="bar-area"></div>
       <div class="sec-heading">Temas por responsable</div>
       <div class="resp-grid" id="resp-grid"></div>
@@ -219,7 +417,7 @@
     <div id="tracker" class="section">
       <div class="page-header">
         <div class="page-title">Seguimiento de temas</div>
-        <div class="page-sub">Hacé clic en un tema para ver el detalle y las acciones.</div>
+        <div class="page-sub">Hacé clic en un tema para ver el detalle y las acciones pendientes.</div>
       </div>
       <div class="filters">
         <input type="text" id="s-search" placeholder="Buscar por tema, responsable..." oninput="renderTable()">
@@ -241,9 +439,9 @@
             <th class="col-id">#</th>
             <th>Tema</th>
             <th class="col-resp">Resp.</th>
-            <th class="col-fecha">Fecha límite</th>
+            <th class="col-fecha">Vencimiento</th>
             <th class="col-estado">Estado</th>
-            <th class="col-prio">Prio.</th>
+            <th class="col-prio">Prioridad</th>
             <th class="col-flag"></th>
           </tr></thead>
           <tbody id="tbody"></tbody>
@@ -256,7 +454,7 @@
     <div id="nuevo" class="section">
       <div class="page-header">
         <div class="page-title">Nuevo tema</div>
-        <div class="page-sub">Completá el formulario para registrar un nuevo tema.</div>
+        <div class="page-sub">Registrá un nuevo tema para la próxima reunión de compras.</div>
       </div>
       <div class="form-card">
         <div class="form-grid">
@@ -271,23 +469,22 @@
             <select id="f-prio"><option>Media</option><option>Alta</option><option>Baja</option></select>
           </div>
           <div class="fg flag-row full">
-            <input type="checkbox" id="f-flag" style="width:auto;cursor:pointer">
+            <input type="checkbox" id="f-flag" style="width:auto;cursor:pointer;accent-color:var(--green-dark)">
             <label for="f-flag">Marcar como Red Flag</label>
           </div>
         </div>
         <button class="btn-primary" onclick="addTema()">Agregar tema</button>
-        <div class="form-msg" id="form-msg"></div>
+        <div class="form-msg" id="form-msg" style="font-size:13px;margin-top:10px"></div>
         <div class="form-hint">
-          <strong>Nota:</strong> Los temas agregados se guardan en esta sesión. Para que persistan en el Google Sheet, copiá la fila generada y pegala directamente en la hoja correspondiente.<br><br>
-          <strong>Para conectar el Sheet:</strong> Asegurate de compartirlo como <em>"Cualquier persona con el vínculo puede ver"</em> y luego usá el botón Sincronizar en el menú lateral.
+          <strong>Nota:</strong> Los temas se guardan localmente en esta sesión. Para persistir en el Sheet, copiá la fila generada y pegala en la hoja correspondiente.<br><br>
+          <strong>Para conectar el Sheet:</strong> Compartilo como <em>"Cualquier persona con el vínculo puede ver"</em> y usá el botón Sincronizar en el menú lateral.
         </div>
       </div>
     </div>
-
   </main>
 </div>
 
-<!-- Detail panel -->
+<!-- Detail Panel -->
 <div id="overlay" style="display:none" class="overlay" onclick="if(event.target===this)closePanel()">
   <div class="panel" id="panel-inner"></div>
 </div>
@@ -295,18 +492,22 @@
 <script>
 const SHEET_ID = '1-RpBg6KysBeCfHth7-hmJcAzS6j3yh3y';
 
+// Generate dot grid
+const dg = document.getElementById('dot-deco');
+if(dg) for(let i=0;i<40;i++){const s=document.createElement('span');dg.appendChild(s);}
+
 const FALLBACK = [
   {id:1,tema:"Planta Tratamiento de Agua",resp:"MJG/JAC",fecha:"",estado:"En progreso",prio:"Alta",flag:false,acciones:["OC emitida y firmada por ambas partes","Contrato pendiente revisión empresa","OC por puesta en marcha y consumibles","Gestión pago anticipo 40% + entrega de garantía","Solicitud de Ingeniería","Preacuerdo servicios OyM → pasar a contrato"],detalle:"Adjudicado BIRADEN USD 115.659 + IVA + USD 3.859 + IVA (puesta en marcha y consumibles). La propuesta aún no está validada por el Directorio."},
-  {id:2,tema:"PCI (USD 249k)",resp:"GMA",fecha:"",estado:"En progreso",prio:"Alta",flag:true,acciones:["Solicitar presupuesto a SEI (ARU)","Estudio técnico sistema de detección Tornay y Mori (JGM)"],detalle:"10+ proveedores consultados. Tornay y Mori presentó oferta, falta oferta de equipos de detección. AWSA, Roma Extintores, Giberol, Juan Andres Venturini, Grauser: sin respuesta."},
-  {id:3,tema:"CCTV",resp:"ARU",fecha:"",estado:"En progreso",prio:"Media",flag:false,acciones:["Centinela confirmó: equipamiento pasa a Kahirós al vencer el contrato (24 meses)","Confirmar presupuesto — Emitir OC + Contrato (Alexis)"],detalle:"Presupuestos en G:\\Unidades compartidas\\Kahirós H2\\4-Control\\3.06-Compras\\4-Procesos\\24-CCTV"},
+  {id:2,tema:"PCI (USD 249k)",resp:"GMA",fecha:"",estado:"En progreso",prio:"Alta",flag:true,acciones:["Solicitar presupuesto a SEI (ARU)","Estudio técnico sistema de detección Tornay y Mori (JGM)"],detalle:"10+ proveedores consultados. Tornay y Mori presentó oferta, falta oferta de equipos de detección."},
+  {id:3,tema:"CCTV",resp:"ARU",fecha:"",estado:"En progreso",prio:"Media",flag:false,acciones:["Centinela confirmó: equipamiento pasa a Kahirós al vencer el contrato (24 meses)","Confirmar presupuesto — Emitir OC + Contrato (Alexis)"],detalle:"Presupuestos guardados en G Drive."},
   {id:4,tema:"Suministro Iluminación Perimetral",resp:"ARU/JCH/MJG",fecha:"",estado:"Adjudicado",prio:"Media",flag:false,acciones:["Avanzar en OC Ilumínica (ARU)","Tramitar no competitivo en Cámara de Industrias (JGM)","Plateo a Creditel — factura descontando de otro hito (MJG)"],detalle:"Definida adjudicación a Ilumínica (solo equipos)."},
   {id:5,tema:"Suministro Iluminación Plataforma de procesos",resp:"JGM",fecha:"",estado:"Abierto",prio:"Media",flag:false,acciones:["Revisar con equipo eléctrico qué información hay en la ingeniería","Salir a cotizar (Ilumínica, Electrosistemas, otros)"],detalle:"Solicitar a ALUSA Ingeniería para cotizar el suministro."},
   {id:6,tema:"Suministro UPS",resp:"JCH",fecha:"",estado:"Adjudicado",prio:"Media",flag:false,acciones:["Esperar por edificios de servicios para llevar a la planta"],detalle:"Comprado ENSUR."},
-  {id:7,tema:"Transformador SSAA",resp:"ARU",fecha:"2026-04-30",estado:"En progreso",prio:"Alta",flag:false,acciones:["Incoterm DAP Fray Bentos","Planificar la nacionalización","Planificar equipamiento en obra para descarga"],detalle:"OC emitida 24/03 — ya la tiene el proveedor. Fecha entrega: finales de abril. Se da de baja envolvente, se agrega tablero."},
+  {id:7,tema:"Transformador SSAA",resp:"ARU",fecha:"2026-04-30",estado:"En progreso",prio:"Alta",flag:false,acciones:["Incoterm DAP Fray Bentos","Planificar la nacionalización","Planificar equipamiento en obra para descarga"],detalle:"OC emitida 24/03 — ya la tiene el proveedor. Fecha entrega: finales de abril."},
   {id:8,tema:"Suministro Columna de CCTV",resp:"ARU",fecha:"2026-04-20",estado:"Abierto",prio:"Alta",flag:false,acciones:["Dar de alta el proveedor (Premolnor — Columna 15mts)","Emitir OC — verificar precio con proveedor","Cotizar flete / planificar equipos para descarga"],detalle:"Planificar envío a la obra entre el 20/4 al 30/4."},
-  {id:9,tema:"Obras eléctricas — Licitación 1",resp:"JGM",fecha:"2026-06-01",estado:"En progreso",prio:"Alta",flag:false,acciones:["A la espera de propuestas — evacuando dudas técnicas"],detalle:"TGSA + Instalación eléctrica del galpón + SPDA + Montaje y conexión del transformador. Proveedores: Electrosistemas, Prodie, SCR ingeniería. Entrega en sitio: Junio 2026."},
-  {id:10,tema:"Acabado caminería (adicional)",resp:"PSAN",fecha:"",estado:"Abierto",prio:"Baja",flag:false,acciones:["A la espera de cotización de Bamilir"],detalle:"No forma parte del alcance original. Empresa interesada: Bamilir."},
-  {id:11,tema:"Logística nacional HRS (puerto y transporte)",resp:"MJG",fecha:"",estado:"Abierto",prio:"Alta",flag:false,acciones:["Mail a KN: confirmar transporte y no desconsolidación en puerto (incluir fire panels)","Avisar que operativa se realiza semana siguiente a Turismo","Cotizar desconsolidado de 7 ctrd + extensión 2 semanas fire panels","Generar OC a KN con valores finales"],detalle:"Adjudicar a KN."},
+  {id:9,tema:"Obras eléctricas — Licitación 1",resp:"JGM",fecha:"2026-06-01",estado:"En progreso",prio:"Alta",flag:false,acciones:["A la espera de propuestas — evacuando dudas técnicas"],detalle:"TGSA + Instalación eléctrica galpón + SPDA + Montaje transformador. Proveedores: Electrosistemas, Prodie, SCR ingeniería. Entrega en sitio: Junio 2026."},
+  {id:10,tema:"Acabado caminería (adicional)",resp:"PSAN",fecha:"",estado:"Abierto",prio:"Baja",flag:false,acciones:["A la espera de cotización de Bamilir"],detalle:"No forma parte del alcance original."},
+  {id:11,tema:"Logística nacional HRS (puerto y transporte)",resp:"MJG",fecha:"",estado:"Abierto",prio:"Alta",flag:false,acciones:["Mail a KN: confirmar transporte y no desconsolidación en puerto (incluir fire panels)","Avisar operativa semana siguiente a Turismo","Cotizar desconsolidado 7 ctrd + extensión fire panels","Generar OC a KN con valores finales"],detalle:"Adjudicar a KN."},
   {id:12,tema:"Logística completa Cummins",resp:"JGM",fecha:"",estado:"Abierto",prio:"Media",flag:false,acciones:["JGM envía pliego — Compras solicita cotización"],detalle:""},
   {id:13,tema:"Equipos galpón — Extractores",resp:"JCH",fecha:"",estado:"Abierto",prio:"Media",flag:false,acciones:["Solicitar cotización / adjudicar / emitir OC (3 unidades)","Justificar en adjudicación por qué no se abre llamado a otros"],detalle:"Modelo definido. 3 unidades."},
   {id:14,tema:"Equipos galpón — Motor portón",resp:"PSAN",fecha:"",estado:"En progreso",prio:"Media",flag:false,acciones:["Analizar propuesta PTN, verificar cumplimiento","Emitir OC"],detalle:"PTN envió presupuesto."},
@@ -314,176 +515,161 @@ const FALLBACK = [
   {id:16,tema:"Detector H2 (fijo y portátil)",resp:"ARU/JGM",fecha:"",estado:"En progreso",prio:"Alta",flag:false,acciones:["Cerrar compra detector fijo con DASTEC (ARU)","Consultar si hay otros equipos a incorporar (JGM)","OC emitida — resta enviarla al proveedor"],detalle:""},
   {id:17,tema:"Semirremolques",resp:"MJG",fecha:"",estado:"Abierto",prio:"Media",flag:false,acciones:["Averiguar con Martín Muñoz lo que hay que comprar"],detalle:""},
   {id:18,tema:"Repuestos camiones",resp:"MJG/JCH",fecha:"",estado:"Abierto",prio:"Media",flag:false,acciones:["Generar reunión para definir alcance de la compra"],detalle:""},
-  {id:19,tema:"Repuestos HRS",resp:"JGM",fecha:"",estado:"Abierto",prio:"Media",flag:false,acciones:["Pedir a ALAT actualización del presupuesto e indicar los críticos no considerados"],detalle:"Solicitar a Air Liquide actualización (misma lista cotización original ALAT/SOCUR)."},
+  {id:19,tema:"Repuestos HRS",resp:"JGM",fecha:"",estado:"Abierto",prio:"Media",flag:false,acciones:["Pedir a ALAT actualización del presupuesto e indicar los críticos no considerados"],detalle:"Ref: lista cotización original ALAT/SOCUR."},
   {id:20,tema:"Camino a Fraylog",resp:"PSAN",fecha:"",estado:"Pendiente",prio:"Baja",flag:false,acciones:["Relevamiento agrimensor para Ingeniería (PSAN)"],detalle:""},
   {id:21,tema:"Portón",resp:"PSAN",fecha:"",estado:"Abierto",prio:"Media",flag:false,acciones:["PSAN está solicitando cotizaciones"],detalle:"Ref: PTN (CYMA)."},
 ];
 
-let sheetData = null;
-let extraTemas = [];
-let activeSheet = 'local';
-
-function data() { return [...(sheetData && activeSheet !== 'local' ? sheetData : FALLBACK), ...extraTemas]; }
+let sheetData = null, extraTemas = [], activeSheet = 'local';
+function data() { return [...(sheetData && activeSheet!=='local'?sheetData:FALLBACK), ...extraTemas]; }
 
 function estBadge(e) {
-  if (!e) return '<span class="badge b-open">—</span>';
-  const l = e.toLowerCase();
-  const cls = l.includes('abiert')?'b-open':l.includes('progres')?'b-prog':l.includes('adjud')?'b-adj':l.includes('pend')?'b-pend':l.includes('cerr')?'b-done':'b-open';
+  if(!e) return '<span class="badge b-open">—</span>';
+  const l=e.toLowerCase();
+  const cls=l.includes('abiert')?'b-open':l.includes('progres')?'b-prog':l.includes('adjud')?'b-adj':l.includes('pend')?'b-pend':l.includes('cerr')?'b-done':'b-open';
   return `<span class="badge ${cls}">${e}</span>`;
 }
-function prioBadge(p) {
-  if (!p) return '';
-  return `<span class="badge ${/alta/i.test(p)?'b-alta':/baja/i.test(p)?'b-baja':'b-media'}">${p}</span>`;
-}
+function prioBadge(p){if(!p)return'';return`<span class="badge ${/alta/i.test(p)?'b-alta':/baja/i.test(p)?'b-baja':'b-media'}">${p}</span>`;}
 
-function showSection(id, el) {
+function showSection(id,el){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   el.classList.add('active');
-  if (id==='dash') renderDash();
-  if (id==='tracker') renderTable();
+  if(id==='dash')renderDash();
+  if(id==='tracker')renderTable();
 }
 
-async function syncSheet() {
+function setSyncState(s,l){
+  const d=document.getElementById('sync-dot');
+  d.className='sync-dot'+(s==='warn'?' warn':s==='err'?' err':'');
+  document.getElementById('sync-label').textContent=l;
+}
+
+async function syncSheet(){
   setSyncState('warn','Sincronizando...');
-  const sheets = ['24-03-2026','Maestra'];
-  const found = [];
-  for (const s of sheets) {
-    try {
-      const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(s)}`);
-      const t = await r.text();
-      if (t.includes('"status":"ok"') || (t.includes('"label"') && !t.includes('invalid_query'))) found.push(s);
-    } catch(e){}
+  const sheets=['24-03-2026','Maestra'];
+  const found=[];
+  for(const s of sheets){
+    try{
+      const r=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(s)}`);
+      const t=await r.text();
+      if(t.includes('"status":"ok"')||t.includes('"label"'))found.push(s);
+    }catch(e){}
   }
-  const sel = document.getElementById('sheet-sel');
-  if (found.length) {
-    sel.innerHTML = '<option value="local">24-03-2026 (local)</option>' +
-      found.map(s=>`<option value="${s}">${s} (Sheet)</option>`).join('');
-    setSyncState('ok', `${found.length} hoja(s) encontrada(s)`);
-  } else {
-    setSyncState('err','Sheet no accesible — verificá permisos');
-  }
+  const sel=document.getElementById('sheet-sel');
+  if(found.length){
+    sel.innerHTML='<option value="local">24-03-2026 (local)</option>'+found.map(s=>`<option value="${s}">${s} (Sheet)</option>`).join('');
+    setSyncState('ok',`${found.length} hoja(s) encontrada(s)`);
+  } else {setSyncState('err','Sheet no accesible');}
 }
 
-async function onSheetChange() {
-  const val = document.getElementById('sheet-sel').value;
-  activeSheet = val;
-  if (val === 'local') { sheetData = null; setSyncState('ok','Datos locales'); renderDash(); renderTable(); return; }
-  setSyncState('warn','Cargando hoja...');
-  try {
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(val)}`;
-    const res = await fetch(url);
-    const text = await res.text();
-    const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-    const cols = json.table.cols.map(c=>c.label.toLowerCase().trim());
-    function col(row,kws){ for(const k of kws){ const i=cols.findIndex(c=>c.includes(k)); if(i!==-1&&row.c[i]&&row.c[i].v!==null) return String(row.c[i].v).trim(); } return ''; }
-    sheetData = json.table.rows
-      .filter(r=>r.c&&r.c.some(c=>c&&c.v))
-      .map((r,i)=>({
-        id: col(r,['id','#'])||String(i+1),
-        tema: col(r,['desc','tema','asunto','título','titulo']),
-        resp: col(r,['resp','responsable','asignado','owner']),
-        fecha: col(r,['fecha','venc','limite','due','date']),
-        estado: col(r,['estado','status','etapa']),
-        prio: col(r,['prior','prioridad','urgencia']),
-        flag: /sí|si|yes|1/i.test(col(r,['flag','red'])),
-        acciones: col(r,['accion','decisión','decision','acción']).split('\n').filter(Boolean),
-        detalle:'',
-      })).filter(r=>r.tema);
+async function onSheetChange(){
+  const val=document.getElementById('sheet-sel').value;
+  activeSheet=val;
+  if(val==='local'){sheetData=null;setSyncState('ok','Datos locales');renderDash();renderTable();return;}
+  setSyncState('warn','Cargando...');
+  try{
+    const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(val)}`;
+    const res=await fetch(url);
+    const text=await res.text();
+    const json=JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+    const cols=json.table.cols.map(c=>c.label.toLowerCase().trim());
+    function col(row,kws){for(const k of kws){const i=cols.findIndex(c=>c.includes(k));if(i!==-1&&row.c[i]&&row.c[i].v!==null)return String(row.c[i].v).trim();}return'';}
+    sheetData=json.table.rows.filter(r=>r.c&&r.c.some(c=>c&&c.v)).map((r,i)=>({
+      id:col(r,['id','#'])||String(i+1),
+      tema:col(r,['desc','tema','asunto','título','titulo']),
+      resp:col(r,['resp','responsable','asignado']),
+      fecha:col(r,['fecha','venc','limite','due','date']),
+      estado:col(r,['estado','status','etapa']),
+      prio:col(r,['prior','prioridad','urgencia']),
+      flag:/sí|si|yes|1/i.test(col(r,['flag','red'])),
+      acciones:col(r,['accion','decisión','decision']).split('\n').filter(Boolean),
+      detalle:'',
+    })).filter(r=>r.tema);
     setSyncState('ok',`${sheetData.length} temas · ${val}`);
-    renderDash(); renderTable();
-  } catch(e) {
-    setSyncState('err','Error al leer la hoja');
-    sheetData = null;
-  }
+    renderDash();renderTable();
+  }catch(e){setSyncState('err','Error al leer la hoja');sheetData=null;}
 }
 
-function setSyncState(state, label) {
-  const dot = document.getElementById('sync-dot');
-  dot.className = 'sync-dot' + (state==='warn'?' warn':state==='err'?' err':'');
-  document.getElementById('sync-label').textContent = label;
-}
+function renderDash(){
+  const d=data();
+  const total=d.length;
+  const open=d.filter(r=>/abiert/i.test(r.estado)).length;
+  const prog=d.filter(r=>/progres/i.test(r.estado)).length;
+  const adj=d.filter(r=>/adjud/i.test(r.estado)).length;
+  const done=d.filter(r=>/cerr/i.test(r.estado)).length;
+  const flags=d.filter(r=>r.flag).length;
 
-function renderDash() {
-  const d = data();
-  const total = d.length;
-  const open = d.filter(r=>/abiert/i.test(r.estado)).length;
-  const prog = d.filter(r=>/progres/i.test(r.estado)).length;
-  const adj = d.filter(r=>/adjud/i.test(r.estado)).length;
-  const done = d.filter(r=>/cerr/i.test(r.estado)).length;
-  const flags = d.filter(r=>r.flag).length;
+  document.getElementById('kpi-grid').innerHTML=[
+    ['Total temas',total,''],
+    ['Abiertos',open,''],
+    ['En progreso',prog,'c-amber'],
+    ['Adjudicados',adj,'c-green'],
+    ['Cerrados',done,'c-green'],
+    ['Red Flags',flags,'c-red'],
+  ].map(([l,v,c])=>`<div class="kpi ${c}"><div class="kpi-label">${l}</div><div class="kpi-value">${v}</div></div>`).join('');
 
-  document.getElementById('kpi-grid').innerHTML = [
-    ['Total temas', total, ''],
-    ['Abiertos', open, 'c-blue'],
-    ['En progreso', prog, 'c-amber'],
-    ['Adjudicados', adj, 'c-green'],
-    ['Cerrados', done, 'c-green'],
-    ['Red Flags', flags, 'c-red'],
-  ].map(([l,v,c])=>`<div class="kpi"><div class="kpi-label">${l}</div><div class="kpi-value ${c}">${v}</div></div>`).join('');
+  const today=new Date();today.setHours(0,0,0,0);
+  const overdue=d.filter(r=>{if(!r.fecha||/cerr|adj/i.test(r.estado))return false;const dt=new Date(r.fecha);dt.setHours(0,0,0,0);return dt<today;});
+  const soon=d.filter(r=>{if(!r.fecha||/cerr|adj/i.test(r.estado))return false;const dt=new Date(r.fecha);dt.setHours(0,0,0,0);const diff=Math.round((dt-today)/86400000);return diff>=0&&diff<=7;});
+  const flagItems=d.filter(r=>r.flag);
 
-  const today = new Date(); today.setHours(0,0,0,0);
-  const overdue = d.filter(r=>{if(!r.fecha||/cerr|adj/i.test(r.estado))return false;const dt=new Date(r.fecha);dt.setHours(0,0,0,0);return dt<today;});
-  const soon = d.filter(r=>{if(!r.fecha||/cerr|adj/i.test(r.estado))return false;const dt=new Date(r.fecha);dt.setHours(0,0,0,0);const diff=Math.round((dt-today)/86400000);return diff>=0&&diff<=7;});
-  const flagItems = d.filter(r=>r.flag);
+  let al='';
+  if(flagItems.length)al+=`<div class="alert danger"><span class="alert-icon">⚑</span><span><strong>Red Flag:</strong> ${flagItems.map(r=>r.tema).join(' · ')}</span></div>`;
+  if(overdue.length)al+=`<div class="alert danger"><span class="alert-icon">⊘</span><span><strong>Vencido${overdue.length>1?'s':''}:</strong> ${overdue.map(r=>r.tema).join(' · ')}</span></div>`;
+  if(soon.length)al+=`<div class="alert warn"><span class="alert-icon">⊙</span><span><strong>Vence en 7 días:</strong> ${soon.map(r=>`${r.tema} (${r.fecha.replace('2026-','').replace(/-/g,'/')})`).join(' · ')}</span></div>`;
+  if(!al)al='<div class="alert ok"><span class="alert-icon">✓</span><span>Sin alertas activas. Todo en orden.</span></div>';
+  document.getElementById('alert-area').innerHTML=al;
 
-  let al = '';
-  if (flagItems.length) al += `<div class="alert danger"><span class="alert-icon">⚑</span><span><strong>Red Flag:</strong> ${flagItems.map(r=>r.tema).join(' · ')}</span></div>`;
-  if (overdue.length) al += `<div class="alert danger"><span class="alert-icon">⊘</span><span><strong>Vencido${overdue.length>1?'s':''}:</strong> ${overdue.map(r=>r.tema).join(' · ')}</span></div>`;
-  if (soon.length) al += `<div class="alert warn"><span class="alert-icon">⊙</span><span><strong>Vence en 7 días:</strong> ${soon.map(r=>`${r.tema} (${r.fecha.replace('2026-','').replace(/-/g,'/')})`).join(' · ')}</span></div>`;
-  if (!al) al = '<div class="alert ok"><span class="alert-icon">✓</span><span>Sin alertas activas.</span></div>';
-  document.getElementById('alert-area').innerHTML = al;
-
-  const estados = [['Abierto','#1a5fa8'],['En progreso','#d4900a'],['Adjudicado','#0f6e56'],['Pendiente','#9a2020'],['Cerrado','#2a6a2a']];
-  document.getElementById('bar-area').innerHTML = estados.map(([e,c])=>{
-    const n = d.filter(r=>(r.estado||'').toLowerCase().includes(e.toLowerCase().split(' ')[0])).length;
-    const pct = total ? Math.round(n/total*100) : 0;
-    return `<div class="bar-row"><span class="bar-label">${e}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${c}"></div></div><span class="bar-n">${n}</span></div>`;
+  const estados=[['Abierto','#40916C'],['En progreso','#E07B2A'],['Adjudicado','#2D6A4F'],['Pendiente','#C0392B'],['Cerrado','#74C69D']];
+  document.getElementById('bar-area').innerHTML=estados.map(([e,c])=>{
+    const n=d.filter(r=>(r.estado||'').toLowerCase().includes(e.toLowerCase().split(' ')[0])).length;
+    const pct=total?Math.round(n/total*100):0;
+    return`<div class="bar-row"><span class="bar-label">${e}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${c}"></div></div><span class="bar-n">${n}</span></div>`;
   }).join('');
 
-  const rm = {};
+  const rm={};
   d.forEach(r=>(r.resp||'').split(/[\/,]/).map(s=>s.trim()).filter(Boolean).forEach(s=>{rm[s]=(rm[s]||0)+1;}));
-  document.getElementById('resp-grid').innerHTML = Object.entries(rm).sort((a,b)=>b[1]-a[1])
+  document.getElementById('resp-grid').innerHTML=Object.entries(rm).sort((a,b)=>b[1]-a[1])
     .map(([n,c])=>`<div class="resp-card"><div class="resp-name">${n}</div><div class="resp-count">${c} tema${c>1?'s':''}</div></div>`).join('');
 }
 
-function renderTable() {
-  const search = (document.getElementById('s-search')?.value||'').toLowerCase();
-  const fE = document.getElementById('s-estado')?.value||'';
-  const fR = document.getElementById('s-resp')?.value||'';
-  const fF = document.getElementById('s-flag')?.value||'';
-  const d = data();
+function renderTable(){
+  const search=(document.getElementById('s-search')?.value||'').toLowerCase();
+  const fE=document.getElementById('s-estado')?.value||'';
+  const fR=document.getElementById('s-resp')?.value||'';
+  const fF=document.getElementById('s-flag')?.value||'';
+  const d=data();
 
-  // Populate resp filter
-  const sel = document.getElementById('s-resp');
-  const cur = sel.value;
-  const rs = new Set();
+  const sel=document.getElementById('s-resp');
+  const cur=sel.value;
+  const rs=new Set();
   d.forEach(r=>(r.resp||'').split(/[\/,]/).map(s=>s.trim()).filter(Boolean).forEach(s=>rs.add(s)));
-  sel.innerHTML = '<option value="">Todos los responsables</option>' + [...rs].sort().map(r=>`<option${r===cur?' selected':''}>${r}</option>`).join('');
+  sel.innerHTML='<option value="">Todos los responsables</option>'+[...rs].sort().map(r=>`<option${r===cur?' selected':''}>${r}</option>`).join('');
 
-  const filtered = d.filter(r=>{
-    const ms = !search||(r.tema+r.resp+(r.detalle||'')).toLowerCase().includes(search);
-    const me = !fE||(r.estado||'')===fE;
-    const mr = !fR||(r.resp||'').includes(fR);
-    const mf = !fF||(fF==='1'&&r.flag);
+  const filtered=d.filter(r=>{
+    const ms=!search||(r.tema+r.resp+(r.detalle||'')).toLowerCase().includes(search);
+    const me=!fE||(r.estado||'')===fE;
+    const mr=!fR||(r.resp||'').includes(fR);
+    const mf=!fF||(fF==='1'&&r.flag);
     return ms&&me&&mr&&mf;
   });
 
-  const empty = document.getElementById('t-empty');
-  const tbody = document.getElementById('tbody');
-  if (!filtered.length) { tbody.innerHTML=''; empty.style.display='block'; return; }
+  const empty=document.getElementById('t-empty');
+  const tbody=document.getElementById('tbody');
+  if(!filtered.length){tbody.innerHTML='';empty.style.display='block';return;}
   empty.style.display='none';
 
-  tbody.innerHTML = filtered.map(r=>{
-    const f = r.fecha ? r.fecha.replace('2026-','').replace(/-/g,'/') : '—';
-    const today = new Date(); today.setHours(0,0,0,0);
-    const overdue = r.fecha && new Date(r.fecha) < today && !/cerr|adj/i.test(r.estado);
-    const fechaHtml = `<span style="color:${overdue?'var(--red)':'inherit'}">${f}${overdue?' ⚑':''}</span>`;
-    return `<tr onclick="openPanel(${r.id})">
+  tbody.innerHTML=filtered.map(r=>{
+    const f=r.fecha?r.fecha.replace('2026-','').replace(/-/g,'/'):'—';
+    const today=new Date();today.setHours(0,0,0,0);
+    const overdue=r.fecha&&new Date(r.fecha)<today&&!/cerr|adj/i.test(r.estado);
+    const fechaHtml=`<span style="color:${overdue?'var(--red)':'inherit'};font-weight:${overdue?'700':'400'}">${f}${overdue?' ⚑':''}</span>`;
+    return`<tr onclick="openPanel(${r.id})">
       <td class="col-id">${r.id}</td>
       <td>${r.tema}</td>
-      <td class="col-resp">${r.resp||'—'}</td>
+      <td class="col-resp" style="font-weight:600;color:var(--green-dark)">${r.resp||'—'}</td>
       <td class="col-fecha">${fechaHtml}</td>
       <td class="col-estado">${estBadge(r.estado)}</td>
       <td class="col-prio">${prioBadge(r.prio)}</td>
@@ -492,47 +678,50 @@ function renderTable() {
   }).join('');
 }
 
-function openPanel(id) {
-  const r = data().find(t=>String(t.id)===String(id));
-  if (!r) return;
-  const accs = (r.acciones||[]).map((a,i)=>`<div class="action-item"><span class="action-n">${i+1}</span><span>${a}</span></div>`).join('');
-  document.getElementById('panel-inner').innerHTML = `
-    <button class="panel-close" onclick="closePanel()">✕ Cerrar</button>
-    <div class="panel-title">${r.tema}</div>
-    <div class="panel-meta">
-      <span class="panel-lbl">Estado</span><span>${estBadge(r.estado)}</span>
-      <span class="panel-lbl">Responsable</span><span>${r.resp||'—'}</span>
-      <span class="panel-lbl">Fecha límite</span><span>${r.fecha||'—'}</span>
-      <span class="panel-lbl">Prioridad</span><span>${prioBadge(r.prio)}</span>
-      ${r.flag?`<span class="panel-lbl">Alerta</span><span><span class="badge b-flag">⚑ Red Flag</span></span>`:''}
+function openPanel(id){
+  const r=data().find(t=>String(t.id)===String(id));
+  if(!r)return;
+  const accs=(r.acciones||[]).map((a,i)=>`<div class="action-item"><span class="action-n">${i+1}</span><span>${a}</span></div>`).join('');
+  document.getElementById('panel-inner').innerHTML=`
+    <div class="panel-header">
+      <div class="panel-title">${r.tema}</div>
+      <button class="panel-close" onclick="closePanel()">✕</button>
     </div>
-    ${r.detalle?`<div class="panel-ctx">${r.detalle}</div>`:''}
-    <div class="actions-heading">Acciones pendientes</div>
-    ${accs||'<div style="font-size:13px;color:var(--text3)">Sin acciones registradas.</div>'}
+    <div class="panel-body">
+      <div class="panel-meta">
+        <span class="panel-lbl">Estado</span><span>${estBadge(r.estado)}</span>
+        <span class="panel-lbl">Responsable</span><span style="font-weight:700;color:var(--green-dark)">${r.resp||'—'}</span>
+        <span class="panel-lbl">Fecha límite</span><span>${r.fecha||'—'}</span>
+        <span class="panel-lbl">Prioridad</span><span>${prioBadge(r.prio)}</span>
+        ${r.flag?`<span class="panel-lbl">Alerta</span><span><span class="badge b-flag">⚑ Red Flag</span></span>`:''}
+      </div>
+      ${r.detalle?`<div class="panel-ctx">${r.detalle}</div>`:''}
+      <div class="actions-heading">Acciones pendientes</div>
+      ${accs||'<div style="font-size:13px;color:var(--text3)">Sin acciones registradas.</div>'}
+    </div>
   `;
   document.getElementById('overlay').style.display='flex';
 }
-function closePanel() { document.getElementById('overlay').style.display='none'; }
+function closePanel(){document.getElementById('overlay').style.display='none';}
 
-function addTema() {
-  const desc = document.getElementById('f-desc').value.trim();
-  if (!desc) { document.getElementById('form-msg').innerHTML='<span style="color:var(--red)">La descripción es obligatoria.</span>'; return; }
+function addTema(){
+  const desc=document.getElementById('f-desc').value.trim();
+  if(!desc){document.getElementById('form-msg').innerHTML='<span style="color:var(--red)">La descripción es obligatoria.</span>';return;}
   extraTemas.push({
-    id: data().length+1, tema: desc,
-    resp: document.getElementById('f-resp').value.trim()||'—',
-    fecha: document.getElementById('f-fecha').value||'',
-    estado: document.getElementById('f-estado').value,
-    prio: document.getElementById('f-prio').value,
-    flag: document.getElementById('f-flag').checked,
-    acciones: document.getElementById('f-acc').value.trim().split('\n').filter(Boolean),
-    detalle: '',
+    id:data().length+1,tema:desc,
+    resp:document.getElementById('f-resp').value.trim()||'—',
+    fecha:document.getElementById('f-fecha').value||'',
+    estado:document.getElementById('f-estado').value,
+    prio:document.getElementById('f-prio').value,
+    flag:document.getElementById('f-flag').checked,
+    acciones:document.getElementById('f-acc').value.trim().split('\n').filter(Boolean),
+    detalle:'',
   });
-  document.getElementById('form-msg').innerHTML='<span style="color:var(--green)">Tema agregado correctamente.</span>';
+  document.getElementById('form-msg').innerHTML='<span style="color:var(--green-dark)">✓ Tema agregado correctamente.</span>';
   ['f-desc','f-acc','f-resp','f-fecha'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-flag').checked=false;
 }
 
-// Init
 renderDash();
 renderTable();
 </script>
