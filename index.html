@@ -338,6 +338,79 @@
   }
   .empty-state { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 13px; }
 
+  /* Edit mode */
+  .edit-btn {
+    background: none; border: 1px solid var(--border2);
+    border-radius: 6px; padding: 3px 9px; font-size: 11px;
+    color: var(--text3); cursor: pointer; font-family: var(--font);
+    transition: all 0.12s;
+  }
+  .edit-btn:hover { background: var(--green-bg); color: var(--green-dark); border-color: var(--green-mid); }
+  .edit-btn.save { background: var(--green-dark); color: #fff; border-color: var(--green-dark); }
+  .edit-btn.save:hover { background: var(--green-mid); }
+  .edit-btn.cancel { color: var(--text3); }
+  .edit-btn.danger { color: var(--red); border-color: var(--red-bd); }
+  .edit-btn.danger:hover { background: var(--red-bg); }
+  .edit-row { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+
+  .field-edit input, .field-edit select, .field-edit textarea {
+    width: 100%; padding: 7px 10px; border-radius: var(--radius);
+    border: 1.5px solid var(--green-mid); background: var(--surface);
+    color: var(--text); font-size: 13px; font-family: var(--font);
+    box-shadow: 0 0 0 3px rgba(64,145,108,0.1);
+  }
+  .field-edit textarea { min-height: 100px; resize: vertical; }
+  .field-view { cursor: pointer; }
+  .field-view:hover { text-decoration: underline; text-decoration-style: dotted; }
+
+  .panel-actions-list { margin-top: 8px; }
+  .action-edit-row { display: flex; gap: 8px; align-items: flex-start; padding: 6px 0; border-bottom: 1px solid var(--border); }
+  .action-edit-row:last-child { border-bottom: none; }
+  .action-edit-input {
+    flex: 1; padding: 5px 8px; border-radius: 6px;
+    border: 1px solid var(--border2); font-size: 13px;
+    font-family: var(--font); color: var(--text); background: var(--surface);
+  }
+  .action-edit-input:focus { outline: none; border-color: var(--green-mid); }
+  .action-del-btn { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 16px; padding: 2px 4px; flex-shrink: 0; }
+  .action-del-btn:hover { color: var(--red); }
+  .add-action-btn {
+    margin-top: 8px; width: 100%; padding: 7px; border: 1px dashed var(--border2);
+    border-radius: var(--radius); background: none; color: var(--text3);
+    font-size: 12px; cursor: pointer; font-family: var(--font);
+  }
+  .add-action-btn:hover { border-color: var(--green-mid); color: var(--green-dark); background: var(--green-bg); }
+
+  .nueva-reunion-btn {
+    display: flex; align-items: center; gap: 8px;
+    margin: 0 0 16px; padding: 10px 16px;
+    background: var(--green-dark); color: #fff;
+    border: none; border-radius: var(--radius-lg);
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    font-family: var(--font); letter-spacing: 0.02em;
+    transition: background 0.15s;
+  }
+  .nueva-reunion-btn:hover { background: var(--green-mid); }
+  .reunion-modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+    z-index: 300; display: flex; align-items: center; justify-content: center;
+  }
+  .reunion-modal {
+    background: var(--surface); border-radius: var(--radius-lg);
+    padding: 28px; width: 420px; max-width: 95vw;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  }
+  .reunion-modal h3 { font-family: var(--font-head); font-size: 17px; font-weight: 700; color: var(--green-dark); margin-bottom: 16px; }
+  .reunion-modal label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3); display: block; margin-bottom: 5px; }
+  .reunion-modal input {
+    width: 100%; padding: 9px 12px; border-radius: var(--radius);
+    border: 1px solid var(--border2); font-size: 13px; font-family: var(--font);
+    color: var(--text); margin-bottom: 14px;
+  }
+  .reunion-modal input:focus { outline: none; border-color: var(--green-mid); box-shadow: 0 0 0 3px rgba(64,145,108,0.12); }
+  .reunion-modal-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+  .tag-nueva { display: inline-block; background: var(--green-pale); color: var(--green-dark); font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; margin-left: 6px; vertical-align: middle; }
+
   /* Ventus accent dot pattern (decorative) */
   .dot-grid {
     display: grid; grid-template-columns: repeat(8, 6px); gap: 6px;
@@ -456,6 +529,10 @@
         <div class="page-title">Nuevo tema</div>
         <div class="page-sub">Registrá un nuevo tema para la próxima reunión de compras.</div>
       </div>
+
+      <button class="nueva-reunion-btn" onclick="openNuevaReunion()">
+        + Nueva reunión de seguimiento
+      </button>
       <div class="form-card">
         <div class="form-grid">
           <div class="fg full"><label>Descripción del tema *</label><input type="text" id="f-desc" placeholder="Nombre o título del tema"></div>
@@ -678,30 +755,6 @@ function renderTable(){
   }).join('');
 }
 
-function openPanel(id){
-  const r=data().find(t=>String(t.id)===String(id));
-  if(!r)return;
-  const accs=(r.acciones||[]).map((a,i)=>`<div class="action-item"><span class="action-n">${i+1}</span><span>${a}</span></div>`).join('');
-  document.getElementById('panel-inner').innerHTML=`
-    <div class="panel-header">
-      <div class="panel-title">${r.tema}</div>
-      <button class="panel-close" onclick="closePanel()">✕</button>
-    </div>
-    <div class="panel-body">
-      <div class="panel-meta">
-        <span class="panel-lbl">Estado</span><span>${estBadge(r.estado)}</span>
-        <span class="panel-lbl">Responsable</span><span style="font-weight:700;color:var(--green-dark)">${r.resp||'—'}</span>
-        <span class="panel-lbl">Fecha límite</span><span>${r.fecha||'—'}</span>
-        <span class="panel-lbl">Prioridad</span><span>${prioBadge(r.prio)}</span>
-        ${r.flag?`<span class="panel-lbl">Alerta</span><span><span class="badge b-flag">⚑ Red Flag</span></span>`:''}
-      </div>
-      ${r.detalle?`<div class="panel-ctx">${r.detalle}</div>`:''}
-      <div class="actions-heading">Acciones pendientes</div>
-      ${accs||'<div style="font-size:13px;color:var(--text3)">Sin acciones registradas.</div>'}
-    </div>
-  `;
-  document.getElementById('overlay').style.display='flex';
-}
 function closePanel(){document.getElementById('overlay').style.display='none';}
 
 function addTema(){
@@ -724,6 +777,255 @@ function addTema(){
 
 renderDash();
 renderTable();
+
+// ─── EDIT PANEL ───────────────────────────────────────────────
+function openPanel(id){
+  const r=data().find(t=>String(t.id)===String(id));
+  if(!r)return;
+  renderPanel(r);
+  document.getElementById('overlay').style.display='flex';
+}
+
+function renderPanel(r){
+  const isNew = r._nueva;
+  const flagBadge = r.flag ? `<span class="badge b-flag">⚑ Red Flag</span>` : '';
+  document.getElementById('panel-inner').innerHTML=`
+    <div class="panel-header">
+      <div class="panel-title">${r.tema}${isNew?'<span class="tag-nueva">Nueva</span>':''}</div>
+      <button class="panel-close" onclick="closePanel()">✕</button>
+    </div>
+    <div class="panel-body" id="panel-body-${r.id}">
+      ${renderPanelView(r)}
+    </div>
+  `;
+}
+
+function renderPanelView(r){
+  const accs=(r.acciones||[]).map((a,i)=>`<div class="action-item"><span class="action-n">${i+1}</span><span>${a}</span></div>`).join('');
+  return `
+    <div class="panel-meta">
+      <span class="panel-lbl">Estado</span><span>${estBadge(r.estado)}</span>
+      <span class="panel-lbl">Responsable</span><span style="font-weight:700;color:var(--green-dark)">${r.resp||'—'}</span>
+      <span class="panel-lbl">Fecha límite</span><span>${r.fecha||'—'}</span>
+      <span class="panel-lbl">Prioridad</span><span>${prioBadge(r.prio)}</span>
+      ${r.flag?`<span class="panel-lbl">Alerta</span><span><span class="badge b-flag">⚑ Red Flag</span></span>`:''}
+    </div>
+    ${r.detalle?`<div class="panel-ctx">${r.detalle}</div>`:''}
+    <div class="actions-heading">Acciones pendientes</div>
+    ${accs||'<div style="font-size:13px;color:var(--text3);margin-bottom:12px">Sin acciones registradas.</div>'}
+    <div class="edit-row">
+      <button class="edit-btn" onclick="switchToEdit(${r.id})">Editar tema</button>
+    </div>
+  `;
+}
+
+function renderPanelEdit(r){
+  const accsHtml = (r.acciones||[]).map((a,i)=>`
+    <div class="action-edit-row" id="accion-row-${i}">
+      <input class="action-edit-input" id="accion-${i}" value="${a.replace(/"/g,'&quot;')}" placeholder="Acción...">
+      <button class="action-del-btn" onclick="deleteAccion(${i})" title="Eliminar">×</button>
+    </div>`).join('');
+
+  return `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+      <div>
+        <div class="panel-lbl" style="margin-bottom:5px">Estado</div>
+        <div class="field-edit">
+          <select id="edit-estado">
+            ${['Abierto','En progreso','Adjudicado','Pendiente','Cerrado'].map(e=>`<option${r.estado===e?' selected':''}>${e}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div>
+        <div class="panel-lbl" style="margin-bottom:5px">Prioridad</div>
+        <div class="field-edit">
+          <select id="edit-prio">
+            ${['Alta','Media','Baja'].map(p=>`<option${r.prio===p?' selected':''}>${p}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div>
+        <div class="panel-lbl" style="margin-bottom:5px">Responsable</div>
+        <div class="field-edit"><input id="edit-resp" value="${r.resp||''}"></div>
+      </div>
+      <div>
+        <div class="panel-lbl" style="margin-bottom:5px">Fecha límite</div>
+        <div class="field-edit"><input type="date" id="edit-fecha" value="${r.fecha||''}"></div>
+      </div>
+      <div style="grid-column:1/-1">
+        <div class="panel-lbl" style="margin-bottom:5px">Descripción</div>
+        <div class="field-edit"><input id="edit-tema" value="${r.tema.replace(/"/g,'&quot;')}"></div>
+      </div>
+      <div style="grid-column:1/-1">
+        <div class="panel-lbl" style="margin-bottom:5px">Contexto / detalle</div>
+        <div class="field-edit"><textarea id="edit-detalle">${r.detalle||''}</textarea></div>
+      </div>
+      <div style="grid-column:1/-1;display:flex;align-items:center;gap:8px">
+        <input type="checkbox" id="edit-flag" style="width:auto;accent-color:var(--green-dark)"${r.flag?' checked':''}>
+        <label for="edit-flag" style="font-size:13px;cursor:pointer;font-weight:600">Red Flag</label>
+      </div>
+    </div>
+    <div class="actions-heading">Acciones pendientes</div>
+    <div class="panel-actions-list" id="acciones-edit-list">
+      ${accsHtml}
+    </div>
+    <button class="add-action-btn" onclick="addAccionField()">+ Agregar acción</button>
+    <div class="edit-row" style="margin-top:16px">
+      <button class="edit-btn save" onclick="saveEdit(${r.id})">Guardar cambios</button>
+      <button class="edit-btn cancel" onclick="cancelEdit(${r.id})">Cancelar</button>
+    </div>
+  `;
+}
+
+function switchToEdit(id){
+  const r=data().find(t=>String(t.id)===String(id));
+  if(!r)return;
+  document.getElementById(`panel-body-${id}`).innerHTML = renderPanelEdit(r);
+  // store id for save
+  document.getElementById('panel-inner').dataset.editId = id;
+}
+
+function cancelEdit(id){
+  const r=data().find(t=>String(t.id)===String(id));
+  if(r) document.getElementById(`panel-body-${id}`).innerHTML = renderPanelView(r);
+}
+
+function saveEdit(id){
+  const idx = data().findIndex(t=>String(t.id)===String(id));
+  if(idx===-1)return;
+
+  // collect actions
+  const accionInputs = document.querySelectorAll('.action-edit-input');
+  const acciones = [...accionInputs].map(i=>i.value.trim()).filter(Boolean);
+
+  const updates = {
+    tema: document.getElementById('edit-tema').value.trim(),
+    estado: document.getElementById('edit-estado').value,
+    prio: document.getElementById('edit-prio').value,
+    resp: document.getElementById('edit-resp').value.trim(),
+    fecha: document.getElementById('edit-fecha').value,
+    detalle: document.getElementById('edit-detalle').value.trim(),
+    flag: document.getElementById('edit-flag').checked,
+    acciones,
+  };
+
+  // find in which array
+  const fallbackIdx = FALLBACK.findIndex(t=>String(t.id)===String(id));
+  if(fallbackIdx!==-1){
+    Object.assign(FALLBACK[fallbackIdx], updates);
+  } else {
+    const extraIdx = extraTemas.findIndex(t=>String(t.id)===String(id));
+    if(extraIdx!==-1) Object.assign(extraTemas[extraIdx], updates);
+  }
+
+  // Re-render panel in view mode
+  const updated = data().find(t=>String(t.id)===String(id));
+  renderPanel(updated);
+  renderDash();
+  renderTable();
+
+  // Show saved toast
+  showToast('Cambios guardados');
+}
+
+function addAccionField(){
+  const list = document.getElementById('acciones-edit-list');
+  const i = list.querySelectorAll('.action-edit-row').length;
+  const div = document.createElement('div');
+  div.className = 'action-edit-row';
+  div.id = `accion-row-${i}`;
+  div.innerHTML = `<input class="action-edit-input" id="accion-${i}" placeholder="Nueva acción..."><button class="action-del-btn" onclick="this.parentElement.remove()" title="Eliminar">×</button>`;
+  list.appendChild(div);
+  div.querySelector('input').focus();
+}
+
+function deleteAccion(i){
+  const row = document.getElementById(`accion-row-${i}`);
+  if(row) row.remove();
+}
+
+// ─── NUEVA REUNIÓN ────────────────────────────────────────────
+let currentReunion = '24-03-2026';
+const reunionesData = { '24-03-2026': FALLBACK };
+
+function openNuevaReunion(){
+  document.getElementById('reunion-modal').style.display='flex';
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('nueva-reunion-fecha').value = today;
+}
+function closeNuevaReunion(){
+  document.getElementById('reunion-modal').style.display='none';
+}
+
+function crearNuevaReunion(){
+  const fecha = document.getElementById('nueva-reunion-fecha').value;
+  const proposito = document.getElementById('nueva-reunion-proposito').value.trim();
+  if(!fecha){ alert('Ingresá una fecha'); return; }
+
+  // Format date label DD-MM-YYYY
+  const parts = fecha.split('-');
+  const label = `${parts[2]}-${parts[1]}-${parts[0]}`;
+
+  // Clone temas abiertos/en progreso from current reunion as base
+  const base = data().filter(r=>/abiert|progres|pend/i.test(r.estado)).map((r,i)=>({
+    ...JSON.parse(JSON.stringify(r)),
+    id: i+1,
+    _nueva: true,
+  }));
+
+  reunionesData[label] = base;
+
+  // Add to selector
+  const sel = document.getElementById('sheet-sel');
+  const opt = document.createElement('option');
+  opt.value = 'reunion_'+label;
+  opt.text = `${label} (nueva)`;
+  sel.appendChild(opt);
+  sel.value = 'reunion_'+label;
+
+  // Switch to new reunion
+  currentReunion = label;
+  sheetData = base;
+  activeSheet = 'reunion_'+label;
+  setSyncState('ok', `${base.length} temas · ${label}`);
+
+  closeNuevaReunion();
+  showToast(`Reunión ${label} creada con ${base.length} temas abiertos`);
+  renderDash();
+  renderTable();
+  showSection('tracker', document.querySelector('.nav-item:nth-child(2)'));
+}
+
+// ─── TOAST ───────────────────────────────────────────────────
+function showToast(msg){
+  let t = document.getElementById('toast');
+  if(!t){
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = `position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--green-dark);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;z-index:999;box-shadow:0 4px 12px rgba(0,0,0,0.2);transition:opacity 0.3s;font-family:var(--font)`;
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._to);
+  t._to = setTimeout(()=>{ t.style.opacity='0'; }, 2500);
+}
 </script>
+<!-- Nueva Reunión Modal -->
+<div id="reunion-modal" style="display:none" class="reunion-modal-overlay" onclick="if(event.target===this)closeNuevaReunion()">
+  <div class="reunion-modal">
+    <h3>Nueva reunión de seguimiento</h3>
+    <label>Fecha de la reunión</label>
+    <input type="date" id="nueva-reunion-fecha">
+    <label>Propósito / descripción (opcional)</label>
+    <input type="text" id="nueva-reunion-proposito" placeholder="ej: Seguimiento compras Kahirós">
+    <p style="font-size:12px;color:var(--text3);margin-bottom:14px;line-height:1.5">Se crearán automáticamente todos los temas abiertos y en progreso de la reunión anterior como base para esta reunión.</p>
+    <div class="reunion-modal-btns">
+      <button class="edit-btn cancel" onclick="closeNuevaReunion()">Cancelar</button>
+      <button class="edit-btn save" onclick="crearNuevaReunion()">Crear reunión</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
