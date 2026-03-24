@@ -567,7 +567,8 @@
 </div>
 
 <script>
-const SHEET_ID = '1-RpBg6KysBeCfHth7-hmJcAzS6j3yh3y';
+const SHEET_ID = '1a7WqQOz4G2-WPle6WWG4lIdbpSgXZiOSBYv_SMyJXk8';
+const SHEET_GID = '977840191';
 
 // Generate dot grid
 const dg = document.getElementById('dot-deco');
@@ -625,20 +626,27 @@ function setSyncState(s,l){
 
 async function syncSheet(){
   setSyncState('warn','Sincronizando...');
-  const sheets=['24-03-2026','Maestra'];
+  // Try by gid first (more reliable), then by name
+  const candidates = [
+    {label:'24-03-2026', url:`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${SHEET_GID}`},
+    {label:'Maestra', url:`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Maestra`},
+  ];
   const found=[];
-  for(const s of sheets){
+  for(const c of candidates){
     try{
-      const r=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(s)}`);
+      const r=await fetch(c.url);
       const t=await r.text();
-      if(t.includes('"status":"ok"')||t.includes('"label"'))found.push(s);
+      if(t.includes('"status":"ok"')||t.includes('"label"')) found.push({...c});
     }catch(e){}
   }
   const sel=document.getElementById('sheet-sel');
   if(found.length){
-    sel.innerHTML='<option value="local">24-03-2026 (local)</option>'+found.map(s=>`<option value="${s}">${s} (Sheet)</option>`).join('');
+    sel.innerHTML='<option value="local">24-03-2026 (local)</option>'+
+      found.map(c=>`<option value="${c.url}">${c.label} (Sheet)</option>`).join('');
     setSyncState('ok',`${found.length} hoja(s) encontrada(s)`);
-  } else {setSyncState('err','Sheet no accesible');}
+  } else {
+    setSyncState('err','Sheet no accesible — verificá permisos');
+  }
 }
 
 async function onSheetChange(){
@@ -647,8 +655,8 @@ async function onSheetChange(){
   if(val==='local'){sheetData=null;setSyncState('ok','Datos locales');renderDash();renderTable();return;}
   setSyncState('warn','Cargando...');
   try{
-    const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(val)}`;
-    const res=await fetch(url);
+    // val is now a full URL
+    const res=await fetch(val);
     const text=await res.text();
     const json=JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
     const cols=json.table.cols.map(c=>c.label.toLowerCase().trim());
@@ -664,7 +672,7 @@ async function onSheetChange(){
       acciones:col(r,['accion','decisión','decision']).split('\n').filter(Boolean),
       detalle:'',
     })).filter(r=>r.tema);
-    setSyncState('ok',`${sheetData.length} temas · ${val}`);
+    setSyncState('ok',`${sheetData.length} temas cargados`);
     renderDash();renderTable();
   }catch(e){setSyncState('err','Error al leer la hoja');sheetData=null;}
 }
